@@ -143,8 +143,8 @@ object Counters extends DoubleCounterFactory with IntCounterFactory {
   }
 
   /**
-  * Returns a LogDoubleCounter over T1's, where the T1 counts are
-  * the logTotals of their counters in the passsed-in counter.
+  * Returns a DoubleCounter over T1's, where the T1 counts are
+  * the totals of their counters in the passsed-in counter.
   */
   def marginalize[T1,T2](ctr: PairedDoubleCounter[T1,T2]) = {
     val result = DoubleCounter[T1]();
