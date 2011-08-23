@@ -4,7 +4,7 @@ version := "1.0.0.RC2-SNAPSHOT"
 
 organization := "org.scalala"
 
-scalaVersion := "2.9.0-1"
+scalaVersion := "2.9.1.RC3"
 
 libraryDependencies += "jline" % "jline" % "0.9.94"
 
