@@ -36,9 +36,9 @@ extends Domain1[Int] with Domain1Like[Int,IndexDomain] {
     }
   }
 
-  override def product[B,That<:Domain1[B]](that : That) = that match {
+  override def product[B](that : Domain1[B]): Domain2[Int, B] = that match {
     case IndexDomain(otherSize) => TableDomain(size,otherSize);
-    case _ => super.product[B,That](that);
+    case _ => super.product(that);
   }
 
   override def toIndexedSeq[B>:Int] =
