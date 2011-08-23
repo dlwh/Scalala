@@ -28,7 +28,7 @@ package domain;
  * @author dramage
  */
 trait Domain2Like
-[@specialized(Int,Long) A1, @specialized(Int,Long) A2,
+[A1, A2,
  +D1 <: Domain1[A1] with Domain1Like[A1,D1],
  +D2 <: Domain1[A2] with Domain1Like[A2,D2],
  +Transpose <: Domain2Like[A2,A1,D2,D1,This,Transpose],
@@ -80,7 +80,7 @@ extends IterableDomain[(A1,A2)] with DomainLike[(A1,A2),This] {
  * @author dramage
  */
 trait Domain2
-[@specialized(Int,Long) A1, @specialized(Int,Long) A2]
+[A1, A2]
 extends Product2[Domain1[A1],Domain1[A2]] with IterableDomain[(A1,A2)]
 with Domain2Like[A1,A2,Domain1[A1],Domain1[A2],Domain2[A2,A1],Domain2[A1,A2]] {
 

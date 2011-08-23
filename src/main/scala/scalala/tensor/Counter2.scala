@@ -35,7 +35,7 @@ import tensor.Counter2.Curried
  * @author dlwh
  */
 trait Counter2Like
-[K1, @specialized(Int,Long) K2, @specialized(Int,Long,Float,Double) V,
+[K1, K2, V,
  +M1[VV] <: Curried[scala.collection.Map,K1]#Result[VV],
  +T <: Counter[K2,V],
  +This<:Counter2[K1,K2,V]]

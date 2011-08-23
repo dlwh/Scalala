@@ -36,7 +36,7 @@ extends Domain1[Int] with Domain1Like[Int,IndexDomain] {
     }
   }
 
-  override def product[B](that : Domain1[B]): Domain2[Int, B] = that match {
+  override def product[@specialized(Int) B](that : Domain1[B]): Domain2[Int, B] = that match {
     case IndexDomain(otherSize) => TableDomain(size,otherSize);
     case _ => super.product(that);
   }
