@@ -34,7 +34,8 @@ import org.netlib.blas._;
 import org.netlib.lapack._;
 import org.netlib.util.intW
 import library.{LinearAlgebra, Random}
-import collection.sparse.SparseArray
+import generic.TensorNonZeroMonadic
+import collection.sparse.{DefaultArrayValue}
 ;
 
 /**
@@ -43,16 +44,65 @@ import collection.sparse.SparseArray
  * @author dramage
  */
 class SparseMatrix[@specialized(Int,Long,Float,Double) V]
-(override val numRows: Int, override val numCols: Int, data_ : Array[SparseVectorCol])
+(override val numRows: Int, override val numCols: Int, data_ : Array[SparseVectorCol[V]])
 (implicit override val scalar : Scalar[V])
 extends /* SparseArrayTensor[(Int, Int), V] with SparseArrayTensorLike[(Int, Int), V, TableDomain, SparseMatrix[V]]
 with*/ mutable.Matrix[V] with mutable.MatrixLike[V, SparseMatrix[V]] {
-  def apply(i: Int, j: Int): V = data_(i)(j)
+  def apply(i: Int, j: Int): V = data_(j)(i)
 
-  def update(i: Int, j: Int, value: V) { data_(i)(j) = value }
+  def update(i: Int, j: Int, value: V) { data_(j)(i) = value }
+
+  override def nonzeroSize = data_.foldLeft(0)(_ + _.nonzeroSize)
+
+//  override def nonzero: TensorNonZeroMonadic[(Int, Int), V, SparseMatrix[V]] =
+
 
   override def foreachNonZeroPair[U](fn: ((Int, Int), V) => U): Boolean = {
-    data_.zipWithIndex.foreach {case (sv, r) => sv.foreachNonZeroPair { case (c, v) => fn((r -> c), v)} }
+    // fixme: zipWithIndex may be expensive
+    var all = true
+    data_.zipWithIndex.foreach {case (sv, j) => all &&= sv.foreachNonZeroPair { case (i, v) => fn((i -> j), v)} }
+    all;
+  }
+
+  override def foreachNonZeroKey[U](fn: ((Int, Int)) => U): Boolean = {
+    // fixme: zipWithIndex may be expensive
+    var all = true
+    data_.zipWithIndex.foreach {case (sv, j) => all &&= sv.foreachNonZeroKey { i => fn(i -> j)} }
     false;
+  }
+
+  override def foreachNonZeroValue[U](fn: (V) => U): Boolean = {
+    var all = true
+    data_.foreach(all &&= _.foreachNonZeroValue(fn))
+    false;
+  }
+
+}
+
+object SparseMatrix extends SparseMatrixConstructors {
+
+
+
+}
+
+trait SparseMatrixConstructors {
+  /** Construct a sparse matrix for the given table domain. */
+  def apply[V: Scalar: ClassManifest: DefaultArrayValue](domain: TableDomain) =
+    zeros[V](domain._1.size, domain._2.size)
+
+  def apply[R,V](rows: R*)(implicit rl : LiteralRow[R, V], scalar: Scalar[V], mv: ClassManifest[V], dav: DefaultArrayValue[V]) = {
+    val nRows = rows.length
+    val nCols = rl.length(rows(0))
+    val rv = zeros(nRows, nCols);
+    for ((row, i) <- rows.zipWithIndex) {
+      rl.foreach(row, ((j, v) => if (v != scalar.zero) rv(i, j) = v))
+    }
+    rv
+  }
+
+  def zeros[V](rows: Int, cols: Int)(implicit s: Scalar[V], mv: ClassManifest[V], dav: DefaultArrayValue[V]) = {
+    val data = new Array[SparseVectorCol[V]](cols)
+    for(c <- 0 until cols) data(c) = SparseVector.zeros[V](rows)
+    new SparseMatrix[V](rows, cols, data)
   }
 }
