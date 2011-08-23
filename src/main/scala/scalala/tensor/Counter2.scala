@@ -69,11 +69,15 @@ extends Tensor2Like[K1,K2,V,SetDomain[K1],SetDomain[K2],Domain2[K1,K2],Domain2[K
   override def domain : Domain2[K1,K2] = {
     new Domain2[K1,K2] {
       def _1 = new SetDomain(data.keySet)
-      def _2 = new SetDomain(data.values.flatMap(_.domain).toSet);
+      val values : Iterable[T] = data.values // fixme: work-around for K2 != Int bug
+      def _2 = new SetDomain(values.flatMap(_.domain).toSet);
     }
   }
 
-  override def apply(k : K1, k2: K2) = data.get(k).map(t => t(k2)) getOrElse scalar.zero;
+  override def apply(k : K1, k2: K2) = {
+    val vo : Option[T] = data.get(k)  // fixme: work-around for K2 != Int bug
+    vo.map(t => t(k2)) getOrElse scalar.zero
+  }
 
   override def checkKey(k : K1, k2: K2) = ();
   
@@ -89,7 +93,7 @@ extends Tensor2Like[K1,K2,V,SetDomain[K1],SetDomain[K2],Domain2[K1,K2],Domain2[K
   //
 
   override def foreachKey[U](fn : ((K1,K2)) => U) : Unit =
-    for((k1,m) <- data; k2 <- m.keys) fn(k1->k2);
+    for((k1,m:T) <- data; k2 <- m.keys) fn(k1->k2);  // fixme: work-around for K2 != Int bug
 
   override def foreachValue[U](fn : V => U) : Unit =
     valuesIterator.foreach(fn);

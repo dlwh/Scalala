@@ -1,7 +1,7 @@
 /*
  * Distributed as part of Scalala, a linear algebra library.
  *
- * Copyright (C) 2008- Daniel Ramage
+ * Copyright (C) 2008- Daniel Ramage, Matthew Pocock
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,10 +38,12 @@ import generic.TensorNonZeroMonadic
 import collection.sparse.{DefaultArrayValue}
 ;
 
-/**
- * A SparseMatrix is backed by an array of sparse column vectors.
+/** Sparse representation of a matrix.
  *
- * @author dramage
+ * `SparseMatrix` is backed by a dense array of `SparseVectorCol`s. This is a good trade-off if each column tends to
+ * have a few values.
+ *
+ * @author Matthew Pocock
  */
 class SparseMatrix[@specialized(Int,Long,Float,Double) V]
 (override val numRows: Int, override val numCols: Int, data_ : Array[SparseVectorCol[V]])

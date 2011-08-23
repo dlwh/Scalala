@@ -88,7 +88,7 @@ extends Tensor2Like[K1,K2,V,SetDomain[K1],SetDomain[K2],Domain2[K1,K2],Domain2[K
   //
 
   override def foreachKey[U](fn : ((K1,K2)) => U) : Unit =
-    for((k1,m) <- data; k2 <- m.keys) fn(k1->k2);
+    for((k1,m:T) <- data; k2 <- m.keys) fn(k1->k2);  // fixme: work-around for K2 != Int bug
 
   override def foreachValue[U](fn : V => U) : Unit =
     valuesIterator.foreach(fn);

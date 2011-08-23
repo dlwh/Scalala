@@ -50,8 +50,9 @@ import scalala.scalar.Scalar;
 @SerialVersionUID(1L)
 @serializable
 final class SparseArray[@specialized T]
-(val length : Int, protected var index : Array[Int], protected var data : Array[T], protected var used : Int, initialActiveLength : Int)
+(val length : Int, protected[sparse] var index : Array[Int], protected[sparse] var data : Array[T], protected[sparse] var used : Int, initialActiveLength : Int)
 (implicit m : ClassManifest[T], df : DefaultArrayValue[T]) {
+  // fixme: widened protected scope to package as this was interacting with @specialized in a buggy way
 
   def this(length : Int, initialActiveLength : Int = 3)(implicit m : ClassManifest[T], d : DefaultArrayValue[T]) =
     this(length, new Array[Int](initialActiveLength), new Array[T](initialActiveLength), 0, initialActiveLength)(m, d);
@@ -306,11 +307,11 @@ final class SparseArray[@specialized T]
   }
   
   /** Sets this array to be a copy of the given other array. */
-  def set(that : SparseArray[T]) = {
+  def set(that : SparseArray[T]): Unit = {
     if (this.length != that.length) {
       throw new IllegalArgumentException("SparseArrays must be the same length");
     }
-    use(that.index.clone, that.data.clone, that.used);
+    use(that.index.clone(), that.data.clone(), that.used)
   }
 
   private def checkrep() {
