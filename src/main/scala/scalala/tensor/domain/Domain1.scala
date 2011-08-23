@@ -44,7 +44,7 @@ extends IterableDomainLike[A,This] { outer =>
     }
   }
 
-  def product[B,That<:Domain1[B]](that : That) =
+  def product[B](that : Domain1[B]) =
     Domain2(repr,that);
 }
 

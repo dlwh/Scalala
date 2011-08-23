@@ -33,7 +33,7 @@ trait CanBuildDomain2ImplicitsLevel0 {
   : CanBuildDomain2[Domain1[K1],Domain1[K2],Domain2[K1,K2]]
   = new CanBuildDomain2[Domain1[K1],Domain1[K2],Domain2[K1,K2]] {
     def apply(a : Domain1[K1], b : Domain1[K2]) =
-      a.product[K2,Domain1[K2]](b);
+      a.product(b);
   }
 }
 

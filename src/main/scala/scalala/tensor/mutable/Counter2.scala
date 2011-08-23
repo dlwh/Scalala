@@ -36,14 +36,14 @@ import scala.collection.mutable.HashMap
  * @author dlwh,dramage
  */
 trait Counter2Like
-[K1, @specialized(Int,Long) K2, @specialized(Int,Long,Float,Double) V,
+[K1, K2, V,
  +M1[VV]<:Curried[scala.collection.mutable.Map,K1]#Result[VV],
  +T<:scalala.tensor.mutable.Counter[K2,V],
  +This<:Counter2[K1,K2,V]]
 extends tensor.Counter2Like[K1,K2,V,M1,T,This] with Tensor2Like[K1,K2,V,SetDomain[K1], SetDomain[K2], Domain2[K1,K2], Domain2[K2,K1], This] { self =>
 
   def update(k1 : K1, k2: K2, v : V) =
-    innerGetOrElseUpdate(k1,data)(k2) = v;
+    innerGetOrElseUpdate(k1,data)(k2:K2) = v;
 
   private[mutable] def innerGetOrElseUpdate[M](k:K1, m: scala.collection.mutable.Map[K1,M]): M = {
     m.getOrElseUpdate(k,m.default(k))
